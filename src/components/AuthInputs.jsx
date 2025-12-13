@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { Button } from "./Button";
+import Button from "./Button";
 import Input from "./Input";
 
 const ControlContainer = styled.div`
@@ -31,35 +31,29 @@ export default function AuthInputs() {
   const passwordNotValid = submitted && enteredPassword.trim().length < 6;
 
   return (
-    <div id="auth-inputs">
-      <ControlContainer>
-        {/* <Label className={`label ${emailNotValid ? "$invalid" : ""}`}>
-            Email
-          </Label> */}
-
+    <div
+      id="auth-inputs"
+      className="w-full max-w-sm p-8 mx-auto rounded shadow-md bg-gradient-to-b from-stone-700 to-stone-900"
+    >
+      <div className="flex flex-col gap-2 mb-6">
         <Input
           label="Email"
           type="email"
-          //using normal class name prop.
-          // className={emailNotValid ? "$invalid" : undefined}
-          // style={{ backgroundColor: emailNotValid ? "#db7171ff" : "#d1d5db" }}
           onChange={(event) => handleInputChange("email", event.target.value)}
-          // using stylying componet conditional prop.
           invalid={emailNotValid}
         />
 
         <Input
           label="Password"
           type="password"
-          className={passwordNotValid ? "$invalid" : undefined}
           onChange={(event) =>
             handleInputChange("password", event.target.value)
           }
           invalid={passwordNotValid}
         />
-      </ControlContainer>
-      <div className="actions">
-        <button type="button" className="text-button">
+      </div>
+      <div className="flex justify-end gap-4">
+        <button type="button" className="text-amber-500 hover:text-amber-500">
           Create a new account
         </button>
         <Button onClick={handleLogin}>Sign In</Button>
