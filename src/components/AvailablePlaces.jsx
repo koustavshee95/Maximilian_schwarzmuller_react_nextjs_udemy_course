@@ -3,56 +3,30 @@ import Places from "./Places.jsx";
 import Error from "./Error.jsx";
 import { sortPlacesByDistance } from "../loc.js";
 import { fetchAvailablePlaces } from "../http.js";
+import { useFetch } from "../hooks/useFetch.js";
+
+const fetchSortedPlaces = async () => {
+  const places = await fetchAvailablePlaces();
+
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const sortedPlaces = sortPlacesByDistance(
+        places,
+        position.coords.latitute,
+        position.coords.lngitute
+      );
+      resolve(sortedPlaces);
+    });
+  });
+};
 
 export default function AvailablePlaces({ onSelectPlace }) {
-  const [availablePlaces, setAvailablePlaces] = useState([]);
-  const [isFetching, setIsFetching] = useState(false);
-  const [error, setError] = useState();
-
-  useEffect(() => {
-    const fetchPlaces = async () => {
-      setIsFetching(true);
-      try {
-        const places = await fetchAvailablePlaces();
-
-        navigator.geolocation.getCurrentPosition((position) => {
-          const sortedPlaces = sortPlacesByDistance(
-            places,
-            position.coords.latitute,
-            position.coords.lngitute
-          );
-          setAvailablePlaces(sortedPlaces);
-          setIsFetching(false);
-        });
-      } catch (err) {
-        setError({
-          message:
-            err.message || "Could not fetch places Please try again later!",
-        });
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    fetchPlaces();
-  }, []);
-
-  /*import axios from "axios";
-import { useEffect, useState } from "react";
-
-useEffect(() => {
-  async function fetchPlaces() {
-    try {
-      const response = await axios.get("http://localhost:3000/places");
-      setAvailablePlaces(response.data.places);
-    } catch (error) {
-      console.error("Error fetching places:", error);
-    }
-  }
-
-  fetchPlaces();
-}, []);
- */
+  const {
+    isFetching,
+    error,
+    fetchedData: availablePlaces,
+    setFetchedData: setAvailablePlaces,
+  } = useFetch(fetchSortedPlaces, []);
 
   if (error) {
     return <Error title="An Error Occurred!" message={error.message} />;
